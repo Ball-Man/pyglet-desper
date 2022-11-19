@@ -75,3 +75,22 @@ class TestLoop:
         loop.start()
 
         assert handler.args_tuple == event_args
+
+    def test_disconnect_window_events(self, populated_world_handle, loop,
+                                      window):
+        loop.connect_window_events(window, 'on_key_press')
+
+        handler = OnKeyPressComponent()
+        populated_world_handle().create_entity(
+            OnUpdateQuitComponent(), handler)
+
+        loop.switch(populated_world_handle)
+
+        event_args = 42, 42
+
+        loop.disconnect_window_events(window, 'on_key_press', 'on_draw')
+        window.dispatch_event('on_key_press', *event_args)
+
+        loop.start()
+
+        assert not handler.args_tuple

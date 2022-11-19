@@ -78,3 +78,16 @@ class Loop(desper.Loop[desper.World]):
                     for event in event_names]
 
         window.set_handlers(**dict(zip(event_names, handlers)))
+
+    def disconnect_window_events(self, window: pyglet.window.Window,
+                                 *event_names: str):
+        """Disconnect pyglet events from desper's event system.
+
+        Specified event names will no longer be propagated to the
+        current world (:attr:`current_world`). Antagonistic with respect
+        to :meth:`connect_window_events`.
+        """
+        handlers = [self._generate_window_handler(event)
+                    for event in event_names]
+
+        window.remove_handlers(**dict(zip(event_names, handlers)))
