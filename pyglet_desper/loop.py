@@ -1,4 +1,5 @@
 from typing import Optional
+import functools
 
 import desper
 import pyglet
@@ -48,3 +49,32 @@ class Loop(desper.Loop[desper.World]):
         super().switch(world_handle, clear_current, clear_next)
 
         world_handle().dispatch_enabled = True
+
+    @functools.cache
+    def _generate_window_handler(self, event_name: str):
+        """Generate a handler for a :class:`pyglet.window.Window`.
+
+        Results are cached so that disconnecting the handler is
+        possible.
+        """
+
+        def dispatch(*args, **kwargs):
+            if self.current_world is not None:
+                self.current_world.dispatch(event_name, *args, **kwargs)
+
+        return dispatch
+
+    def connect_window_events(self, window: pyglet.window.Window,
+                              *event_names: str):
+        """Connect pyglet events to desper's event system.
+
+        Events specified through ``event_names`` are connected so
+        that when dispatched from ``window``, they will be also
+        dispatched by :attr:`current_world`. In this way, desper event
+        handlers (:func:`event_handler`) can nimbly receive pyglet
+        events.
+        """
+        handlers = [self._generate_window_handler(event)
+                    for event in event_names]
+
+        window.set_handlers(**dict(zip(event_names, handlers)))

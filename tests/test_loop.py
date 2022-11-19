@@ -59,3 +59,19 @@ class TestLoop:
             loop.loop()
         except desper.Quit:
             pass
+
+    def test_connect_window_events(self, populated_world_handle, loop, window):
+        loop.connect_window_events(window, 'on_key_press')
+
+        handler = OnKeyPressComponent()
+        populated_world_handle().create_entity(
+            OnUpdateQuitComponent(), handler)
+
+        loop.switch(populated_world_handle)
+
+        event_args = 42, 42
+        window.dispatch_event('on_key_press', *event_args)
+
+        loop.start()
+
+        assert handler.args_tuple == event_args

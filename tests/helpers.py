@@ -26,3 +26,11 @@ def populate_transformer(handle, world):
     world.add_processor(desper.OnUpdateProcessor())
 
     world.create_entity(OnUpdateComponent())
+
+
+@desper.event_handler('on_key_press')
+class OnKeyPressComponent:
+    args_tuple = ()
+
+    def on_key_press(self, *args):
+        self.args_tuple = args
