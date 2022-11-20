@@ -32,7 +32,7 @@ class Loop(desper.Loop[desper.World]):
         pyglet.clock.schedule(self.iteration)
 
         # Keep rescheduling the main loop until all windows are closed
-        while pyglet.app.windows:
+        while pyglet.app.windows and not pyglet.app.event_loop.has_exit:
             try:
                 if self.interval is None:
                     pyglet.app.run()
