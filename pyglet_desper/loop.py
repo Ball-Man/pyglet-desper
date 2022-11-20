@@ -19,10 +19,7 @@ class Loop(desper.Loop[desper.World]):
 
     def iteration(self, dt: float):
         """Single loop iteration."""
-        try:
-            self._current_world.process(dt)
-        except desper.SwitchWorld as ex:
-            self.switch(ex.world_handle, ex.clear_current, ex.clear_next)
+        self._current_world.process(dt)
 
     def loop(self):
         """Execute main loop.
@@ -34,11 +31,19 @@ class Loop(desper.Loop[desper.World]):
         """
         pyglet.clock.schedule(self.iteration)
 
-        if self.interval is None:
-            pyglet.app.run()
-            return
+        # Keep rescheduling the main loop until all windows are closed
+        while pyglet.app.windows:
+            try:
+                if self.interval is None:
+                    pyglet.app.run()
+                else:
+                    pyglet.app.run(self.interval)
 
-        pyglet.app.run(self.interval)
+            except desper.SwitchWorld as ex:
+                self.switch(ex.world_handle, ex.clear_current, ex.clear_next)
+
+            # Prevent window redraw from scheduling multiple times
+            pyglet.clock.unschedule(pyglet.app.event_loop._redraw_windows)
 
     def switch(self, world_handle: desper.Handle[desper.World],
                clear_current=False, clear_next=False):
