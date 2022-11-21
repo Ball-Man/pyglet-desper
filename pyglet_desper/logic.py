@@ -24,9 +24,8 @@ class Sprite(pyglet.sprite.Sprite):
                  batch=None,
                  group=None,
                  subpixel=False):
-        super().__init__(img, x=x, y=y, z=z, blend_src=blend_src,
-                         blend_dest=blend_dest, batch=batch, group=group,
-                         subpixel=subpixel)
+        super().__init__(img, x, y, z, blend_src, blend_dest, batch, group,
+                         subpixel)
         # Pause at creation to prevent global clock from scheduling it
         if self._animation is not None:
             self.paused = True
