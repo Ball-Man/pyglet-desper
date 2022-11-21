@@ -1,7 +1,7 @@
 from context import pyglet_desper as pdesper
 
+
 import desper
-import pyglet
 import pytest
 
 from helpers import *
@@ -10,13 +10,6 @@ from helpers import *
 @pytest.fixture
 def loop():
     return pdesper.Loop()
-
-
-@pytest.fixture
-def window():
-    win = pyglet.window.Window()
-    yield win
-    win.close()
 
 
 @pytest.fixture

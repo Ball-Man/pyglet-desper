@@ -1,4 +1,14 @@
 import desper
+import pyglet
+
+import pytest
+
+
+@pytest.fixture(scope='session')
+def window():
+    win = pyglet.window.Window()
+    yield win
+    win.close()
 
 
 @desper.event_handler('on_update')
