@@ -53,3 +53,42 @@ class TestAdvancedSprite:
         sprite = pdesper.AdvancedSprite(animation)
         sprite.on_switch_out(None, None)
         assert sprite.paused
+
+
+class TestCamera:
+
+    def test_init_default(self, window):
+        batch = pyglet.graphics.Batch()
+        camera = pdesper.Camera(batch)
+
+        assert camera.batch is batch
+        assert camera.window is window
+        assert camera.viewport == (0, 0, window.width, window.height)
+
+    def test_init(self, window):
+        different_window = pyglet.window.Window()
+        batch = pyglet.graphics.Batch()
+        camera = pdesper.Camera(batch, desper.math.Mat4(),
+                                desper.math.Vec4(), different_window)
+
+        assert camera.batch is batch
+        assert camera.window is different_window
+        assert camera.viewport == desper.math.Vec4()
+
+        different_window.close()
+
+
+class TestCameraProcessor:
+
+    def test_init_default(self, window):
+        print(pyglet.app.windows)
+        processor = pdesper.CameraProcessor()
+
+        assert processor.window is window
+
+    def test_inis(self, window):
+        different_window = pyglet.window.Window()
+
+        processor = pdesper.CameraProcessor(different_window)
+
+        assert processor.window is different_window
