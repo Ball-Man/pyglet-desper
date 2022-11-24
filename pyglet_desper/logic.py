@@ -205,6 +205,9 @@ class CameraProcessor(desper.Processor):
         pass
 
 
+@desper.event_handler(desper.ON_POSITION_CHANGE_EVENT_NAME,
+                      desper.ON_ROTATION_CHANGE_EVENT_NAME,
+                      desper.ON_SCALE_CHANGE_EVENT_NAME)
 class CameraTransform2D(desper.Controller):
     """Synchronize :class:`Camera` with :class:`desper.Transform2D`.
 
@@ -235,7 +238,7 @@ class CameraTransform2D(desper.Controller):
         transform.add_handler(self)
 
         self._translation_matrix = desper.math.Mat4.from_translation(
-            (*-self.transform.position, 0.))
+            (*-transform.position, 0.))
         self._rotation_matrix = desper.math.Mat4.from_rotation(
             math.radians(transform.rotation), (0., 0., 1.))
         self._scale_matrix = desper.math.Mat4.from_scale(
@@ -251,3 +254,24 @@ class CameraTransform2D(desper.Controller):
         """
         return (self._scale_matrix @ self._translation_matrix
                 @ self._rotation_matrix)
+
+    def on_position_change(self, new_position: desper.math.Vec2):
+        """Event handler: update translation matrix and camera."""
+        self._translation_matrix = desper.math.Mat4.from_translation(
+            (*-new_position, 0.))
+
+        self.camera.view = self.get_view_matrix()
+
+    def on_rotation_change(self, new_rotation: float):
+        """Event handler: update rotation matrix and camera."""
+        self._rotation_matrix = desper.math.Mat4.from_rotation(
+            math.radians(new_rotation), (0., 0., 1.))
+
+        self.camera.view = self.get_view_matrix()
+
+    def on_scale_change(self, new_scale: desper.math.Vec2):
+        """Event handler: update scale matrix and camera."""
+        self._scale_matrix = desper.math.Mat4.from_scale(
+            (*new_scale, 1.))
+
+        self.camera.view = self.get_view_matrix()
