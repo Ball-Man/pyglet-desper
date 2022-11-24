@@ -19,6 +19,11 @@ def animation(image):
     ])
 
 
+@pytest.fixture
+def world():
+    return desper.World()
+
+
 class TestSprite:
 
     def test_on_add(self, window, animation):
@@ -92,3 +97,20 @@ class TestCameraProcessor:
         processor = pdesper.CameraProcessor(different_window)
 
         assert processor.window is different_window
+
+
+class TestCameraTransform2D:
+
+    def test_on_add(self, world):
+        batch = pyglet.graphics.Batch()
+        camera = pdesper.Camera(batch)
+        transform = desper.Transform2D()
+        camera_transform = pdesper.CameraTransform2D()
+
+        world.create_entity(transform, camera, camera_transform)
+
+        assert transform.is_handler(camera_transform)
+
+    def test_get_view_matrix(self):
+        camera_transform = pdesper.CameraTransform2D()
+        assert isinstance(camera_transform.get_view_matrix(), desper.math.Mat4)

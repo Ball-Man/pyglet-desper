@@ -1,3 +1,4 @@
+import math
 from typing import Optional
 
 import desper
@@ -202,3 +203,51 @@ class CameraProcessor(desper.Processor):
     def process(self, dt):
         """No implementation needed."""
         pass
+
+
+class CameraTransform2D(desper.Controller):
+    """Synchronize :class:`Camera` with :class:`desper.Transform2D`.
+
+    A :class:`Camera`s internal :attr:`Camera.view` matrix is updated
+    based on the entity's :class:`desper.Transform2D`.
+    Requires to be in the same desper entity of both the camera and the
+    transform component.
+    """
+    transform: desper.Transform2D = desper.ComponentReference(
+        desper.Transform2D)
+    camera: Camera = desper.ComponentReference(Camera)
+
+    # Cached matrices for faster recalculations
+    _translation_matrix = desper.math.Mat4()
+    _rotation_matrix = desper.math.Mat4()
+    _scale_matrix = desper.math.Mat4()
+
+    def on_add(self, entity, world):
+        """Setup transform event handling."""
+        super().on_add(entity, world)
+
+        assert self.transform is not None and self.camera is not None, (
+            'Both a Transform component and a Camera component '
+            'are required to be in the same entity in order for '
+            f'{type(self)} to work.')
+
+        transform = self.transform
+        transform.add_handler(self)
+
+        self._translation_matrix = desper.math.Mat4.from_translation(
+            (*-self.transform.position, 0.))
+        self._rotation_matrix = desper.math.Mat4.from_rotation(
+            math.radians(transform.rotation), (0., 0., 1.))
+        self._scale_matrix = desper.math.Mat4.from_scale(
+            (*transform.scale, 1.))
+
+        self.camera.view = self.get_view_matrix()
+
+    def get_view_matrix(self) -> desper.math.Mat4:
+        """Compute view matrix.
+
+        Each query computes the matrix product between rotation,
+        translation and scale matrix.
+        """
+        return (self._scale_matrix @ self._translation_matrix
+                @ self._rotation_matrix)
