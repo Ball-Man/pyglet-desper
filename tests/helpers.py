@@ -1,7 +1,17 @@
+import os.path as pt
+
 import desper
 import pyglet
 
 import pytest
+
+
+def get_filename(*path: str) -> str:
+    """Get a path with respect to tests folder.
+
+    Use varargs instead of slashes.
+    """
+    return pt.join(pt.dirname(__file__), *path)
 
 
 @pytest.fixture(scope='session')
