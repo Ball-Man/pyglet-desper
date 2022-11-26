@@ -107,7 +107,10 @@ class ImageFileHandle(desper.Handle[pyglet.image.AbstractImage]):
 
         image = pyglet.image.load(abs_filename, decoder=self.decoder)
 
-        if self.atlas:
+        if (self.atlas
+            and image.width + self.border <= self.texture_bin.texture_width
+            and image.height + self.border
+                <= self.texture_bin.texture_height):
             image = self.texture_bin.add(image)
 
         _image_cache[abs_filename] = image
