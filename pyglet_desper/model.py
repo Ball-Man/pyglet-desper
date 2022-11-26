@@ -18,11 +18,11 @@ class MediaFileHandle(desper.Handle[pyglet.media.Source]):
     Optionally, the source can be set to be streamed from disk
     through the ``streaming`` parameter (defaults to: not streamed).
 
-    A decoder can be specified for actual audio decoding. Available
+    A decoder can be specified. Available
     decoders can be inspected through
     :func:`pyglet.media.codecs.get_codecs`.
     If not specified, the first available codec that supports the given
-    file extension will be used.
+    file format will be used.
     """
 
     def __init__(self, filename: str, streaming=False,
