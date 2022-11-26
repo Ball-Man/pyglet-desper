@@ -27,6 +27,20 @@ def texture_bin():
     return pyglet.image.atlas.TextureBin()
 
 
+@pytest.fixture
+def clear_cache():
+    yield
+    pdesper.clear_image_cache()
+
+
+def test_clear_image_cache(png_filename):
+    pdesper.model._image_cache[png_filename] = None
+
+    pdesper.clear_image_cache()
+
+    assert png_filename not in pdesper.model._image_cache
+
+
 class TestMediaFileHandle:
 
     def test_init(self, wav_filename):
@@ -54,7 +68,7 @@ class TestImageFileHandle:
         assert handle.texture_bin is texture_bin
         assert handle.decoder is None
 
-    def test_load(self, png_filename, texture_bin):
+    def test_load(self, png_filename, texture_bin, clear_cache):
         handle = pdesper.ImageFileHandle(png_filename, texture_bin=texture_bin)
         image = handle.load()
 
@@ -67,7 +81,7 @@ class TestImageFileHandle:
             png_filename, texture_bin=texture_bin)
         assert handle2() is image
 
-    def test_load_no_atlas(self, png_filename, texture_bin):
+    def test_load_no_atlas(self, png_filename, texture_bin, clear_cache):
         handle = pdesper.ImageFileHandle(png_filename, atlas=False,
                                          texture_bin=texture_bin)
         handle.load()

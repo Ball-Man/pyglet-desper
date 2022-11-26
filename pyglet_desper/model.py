@@ -37,6 +37,16 @@ times.
 """
 
 
+def clear_image_cache():
+    """Clear module level image cache.
+
+    Texture bins/atlases (e.g. :attr:`default_texture_bin`) will not
+    get cleared. Based on the user's implementation manual
+    intervention might be necessary.
+    """
+    _image_cache.clear()
+
+
 class MediaFileHandle(desper.Handle[pyglet.media.Source]):
     """Specialized handle for pyglet's :class:`pyglet.media.Source`.
 
