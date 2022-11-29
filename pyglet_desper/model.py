@@ -3,6 +3,7 @@
 In particular, a set of specialized :class:`desper.Handle`s are
 provided.
 """
+import json
 import os.path as pt
 from typing import Union
 
@@ -223,3 +224,39 @@ def parse_spritesheet(sheet: pyglet.image.AbstractImage,
     # Finally, assemble frames and return animation
     return Animation([AnimationFrame(region, duration)
                       for region, duration in zip(regions, durations)])
+
+
+def load_spritesheet(filename: str) -> Union[AbstractImage, Animation]:
+    """Load an animation or image from a metadata file.
+
+    The file must be a json in the following format:::
+
+        {
+            "frames": [
+                {
+                    "frame": {"x": ..., "y": ..., "w": ..., "h": ...},
+                    "duration": ...
+                },
+                ...
+            ],
+
+            "meta": {
+                "origin": {"x": ..., "y": ...},
+                "image": "path_to_spritesheet.png"
+            }
+        }
+
+    The only mandatory field is ``image`` (hence ``meta``, as it
+    contains it), which shall contain the path to the actual referenced
+    image file of the spritesheet.
+
+    To further inspect the meaning of other fields, see
+    :func:`parse_spritesheet`, which is internally used.
+    """
+    with open(filename) as file:
+        metadata = json.load(file)
+
+    meta = metadata.get('meta', {})
+    image_filename = pt.join(pt.dirname(filename), meta['image'])
+
+    return parse_spritesheet(ImageFileHandle(image_filename).load(), metadata)

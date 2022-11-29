@@ -162,3 +162,9 @@ class TestParseSpritesheet():
             # Ensure origin
             assert frame.image.anchor_x == origin_x
             assert frame.image.anchor_x == origin_y
+
+
+def test_load_spritesheet(animation_meta_filename):
+    animation = pdesper.load_spritesheet(animation_meta_filename)
+
+    assert isinstance(animation, pyglet.image.Animation)
