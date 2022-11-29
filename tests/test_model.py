@@ -2,6 +2,8 @@ from context import pyglet_desper as pdesper
 
 import os
 import os.path as pt
+import typing
+import json
 
 import pytest
 import pyglet
@@ -20,6 +22,34 @@ def wav_filename():
 @pytest.fixture
 def png_filename():
     return get_filename('files', 'fake_project', 'image', 'logo.png')
+
+
+@pytest.fixture
+def png_image(png_filename):
+    return pyglet.image.load(png_filename)
+
+
+@pytest.fixture
+def animation_sheet_filename():
+    return get_filename('files', 'fake_project', 'image',
+                        'animation1.png')
+
+
+@pytest.fixture
+def animation_sheet(animation_sheet_filename):
+    return pyglet.image.load(animation_sheet_filename)
+
+
+@pytest.fixture
+def animation_meta_filename():
+    return get_filename('files', 'fake_project', 'image',
+                        'animation1.json')
+
+
+@pytest.fixture
+def animation_meta(animation_meta_filename):
+    with open(animation_meta_filename) as fin:
+        return json.load(fin)
 
 
 @pytest.fixture
@@ -87,3 +117,48 @@ class TestImageFileHandle:
         handle.load()
 
         assert not texture_bin.atlases
+
+
+class TestParseSpritesheet():
+
+    def test_defaults(self, png_image):
+        result = pdesper.parse_spritesheet(png_image, {})
+
+        assert result is png_image
+
+    def test_single_frame(self, png_image):
+        frame_region = {'x': 10, 'y': 10, 'w': 30, 'h': 30}
+        meta = {'frames': [{'frame': frame_region}]}
+
+        result = pdesper.parse_spritesheet(png_image, meta)
+
+        assert isinstance(
+            result,
+            (pyglet.image.TextureRegion, pyglet.image.ImageDataRegion))
+
+        assert result.width == frame_region['w']
+        assert result.height == frame_region['h']
+
+    def test_full(self, animation_sheet, animation_meta):
+        # Try building an animation from an actual aseprite export
+        animation = pdesper.parse_spritesheet(animation_sheet, animation_meta)
+
+        assert isinstance(animation, pyglet.image.Animation)
+        assert len(animation.frames) == len(animation_meta['frames'])
+
+        origin_y = animation_meta['meta']['origin']['y']
+        origin_x = animation_meta['meta']['origin']['x']
+
+        for frame_meta, frame in zip(animation_meta['frames'],
+                                     animation.frames):
+            frame_region_meta = frame_meta['frame']
+            assert frame_region_meta['w'] == frame.image.width
+            assert frame_region_meta['h'] == frame.image.height
+            assert frame_region_meta['x'] == frame.image.x
+            assert frame_region_meta['y'] == frame.image.y
+
+            assert frame_meta['duration'] == frame.duration
+
+            # Ensure origin
+            assert frame.image.anchor_x == origin_x
+            assert frame.image.anchor_x == origin_y
