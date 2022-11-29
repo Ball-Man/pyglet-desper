@@ -1,2 +1,2 @@
-desper >= 1.0.0
+git+https://github.com/Ball-Man/desper
 pyglet >= 2.0.0
