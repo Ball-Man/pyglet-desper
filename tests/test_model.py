@@ -2,7 +2,6 @@ from context import pyglet_desper as pdesper
 
 import os
 import os.path as pt
-import typing
 import json
 
 import pytest
