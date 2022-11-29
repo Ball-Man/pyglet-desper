@@ -53,6 +53,11 @@ def animation_meta(animation_meta_filename):
 
 
 @pytest.fixture
+def gif_filename():
+    return get_filename('files', 'fake_project', 'image', 'muybridge.gif')
+
+
+@pytest.fixture
 def texture_bin():
     return pyglet.image.atlas.TextureBin()
 
@@ -168,3 +173,27 @@ def test_load_spritesheet(animation_meta_filename):
     animation = pdesper.load_spritesheet(animation_meta_filename)
 
     assert isinstance(animation, pyglet.image.Animation)
+
+
+class TestRichImageFileHandle:
+
+    def test_load_spritesheet(self, animation_meta_filename):
+        handle = pdesper.RichImageFileHandle(animation_meta_filename)
+
+        animation = handle.load()
+
+        assert isinstance(animation, pyglet.image.Animation)
+
+    def test_load_animation(self, gif_filename):
+        handle = pdesper.RichImageFileHandle(gif_filename)
+
+        animation = handle.load()
+
+        assert isinstance(animation, pyglet.image.Animation)
+
+    def test_load_image(self, png_filename):
+        handle = pdesper.RichImageFileHandle(png_filename)
+
+        image = handle.load()
+
+        assert isinstance(image, pyglet.image.AbstractImage)

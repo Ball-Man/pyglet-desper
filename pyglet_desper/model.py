@@ -62,7 +62,7 @@ class MediaFileHandle(desper.Handle[pyglet.media.Source]):
 
     A decoder can be specified. Available
     decoders can be inspected through
-    :func:`pyglet.media.codecs.get_codecs`.
+    :func:`pyglet.media.codecs.get_decoders`.
     If not specified, the first available codec that supports the given
     file format will be used.
     """
@@ -97,7 +97,7 @@ class ImageFileHandle(desper.Handle[pyglet.image.AbstractImage]):
 
     A decoder can be specified. Available
     decoders can be inspected through
-    :func:`pyglet.image.codecs.get_codecs`.
+    :func:`pyglet.image.codecs.get_decoders`.
     If not specified, the first available codec that supports the given
     file format will be used.
     """
@@ -260,3 +260,50 @@ def load_spritesheet(filename: str) -> Union[AbstractImage, Animation]:
     image_filename = pt.join(pt.dirname(filename), meta['image'])
 
     return parse_spritesheet(ImageFileHandle(image_filename).load(), metadata)
+
+
+class RichImageFileHandle:
+    """Specialized handle for image and animation formats.
+
+    Given a filename (path string), the :meth:`load` implementation
+    tries to load given file, in order, as one of the following:
+
+    - As a spritesheet animation/image (see
+        :func:`load_spritesheet` and :func:`parse_spritesheet`)
+    - As a :class:`pyglet.image.Animation` (for the supported formats
+        see :class:`pyglet.image.codecs.get_animation_decoders`)
+    - As a :class:`pyglet.image.AbstractImage` (same behaviour of
+        :class:`ImageFileHandle`).
+    """
+
+    def __init__(self, filename: str):
+        self.filename = filename
+
+    def load(self) -> Union[Animation, AbstractImage]:
+        """Load designated file.
+
+        Try loading it as a spritesheet (see
+        :func:`load_spritesheet` and :func:`parse_spritesheet`).
+        If not a spritesheet, try loading it as a
+        :class:`pyglet.image.Animation`. If not an animation,
+        load it as a standard image (same behaviour as
+        :class:`ImageFileHandle`)
+        """
+        # Try decoding it as json metadata
+        try:
+            return load_spritesheet(self.filename)
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            pass
+
+        # Try decoding it as animation
+        try:
+            return pyglet.image.load_animation(self.filename)
+
+        # Since pyglet decoders do not reliably raise DecodeExceptions,
+        # a generic catch is necessary. DecodeException is left as
+        # reminder.
+        except (Exception, pyglet.util.DecodeException):
+            pass
+
+        # Otherwise, it is likely an image
+        return ImageFileHandle(self.filename).load()
