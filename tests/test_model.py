@@ -57,6 +57,11 @@ def gif_filename():
 
 
 @pytest.fixture
+def font_filename():
+    return get_filename('files', 'fake_project', 'font', 'SillySet.ttf')
+
+
+@pytest.fixture
 def texture_bin():
     return pyglet.image.atlas.TextureBin()
 
@@ -196,3 +201,13 @@ class TestRichImageFileHandle:
         image = handle.load()
 
         assert isinstance(image, pyglet.image.AbstractImage)
+
+
+class TestFontFileHandle:
+
+    def test_init(self, font_filename):
+        handle = pdesper.FontFileHandle(font_filename)
+
+        handle.load()
+
+        assert pyglet.font.have_font('SillySet')

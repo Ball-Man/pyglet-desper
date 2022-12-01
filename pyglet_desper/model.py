@@ -262,7 +262,7 @@ def load_spritesheet(filename: str) -> Union[AbstractImage, Animation]:
     return parse_spritesheet(ImageFileHandle(image_filename).load(), metadata)
 
 
-class RichImageFileHandle:
+class RichImageFileHandle(desper.Handle[Union[Animation, AbstractImage]]):
     """Specialized handle for image and animation formats.
 
     Given a filename (path string), the :meth:`load` implementation
@@ -307,3 +307,21 @@ class RichImageFileHandle:
 
         # Otherwise, it is likely an image
         return ImageFileHandle(self.filename).load()
+
+
+class FontFileHandle(desper.Handle[None]):
+    """Specialized handle for font loading.
+
+    This is a thin wrapper over font files. No resource is
+    actually returned by calling the handle, the font data is simply
+    loaded into memory and can then be used with pyglet text
+    classes by specifying its family name (see pyglet's docs on
+    `Loading custom fonts <https://bit.ly/3gPjJnD>`_).
+    """
+
+    def __init__(self, filename: str):
+        self.filename = filename
+
+    def load(self) -> None:
+        """Add file as font."""
+        pyglet.font.add_file(self.filename)
