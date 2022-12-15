@@ -114,3 +114,61 @@ class TestCameraTransform2D:
     def test_get_view_matrix(self):
         camera_transform = pdesper.CameraTransform2D()
         assert isinstance(camera_transform.get_view_matrix(), desper.math.Mat4)
+
+
+class TestGraphicSync2D:
+
+    def test_init(self):
+        sync = pdesper.GraphicSync2D(Transformable)
+
+        assert sync.component_type is Transformable
+        assert isinstance(sync, desper.EventHandler)
+
+    def test_on_add(self, world):
+        sync = pdesper.GraphicSync2D(Transformable)
+        transform = desper.Transform2D()
+        entity = world.create_entity(transform)
+
+        sync.on_add(entity, world)
+
+        assert transform.is_handler(sync)
+
+    def test_on_remove(self, world):
+        sync = pdesper.GraphicSync2D(Transformable)
+        transform = desper.Transform2D()
+        transformable = Transformable()
+        entity = world.create_entity(transform, transformable, sync)
+
+        sync.on_remove(entity, world)
+
+        assert transformable.deleted == 1
+
+    def test_on_position_change(self, world):
+        sync = pdesper.GraphicSync2D(Transformable)
+        transformable = Transformable()
+        world.create_entity(desper.Transform2D(), transformable, sync)
+
+        new_pos = desper.math.Vec2(1, 2)
+        sync.on_position_change(new_pos)
+
+        assert transformable.position is new_pos
+
+    def test_on_rotation_change(self, world):
+        sync = pdesper.GraphicSync2D(Transformable)
+        transformable = Transformable()
+        world.create_entity(desper.Transform2D(), transformable, sync)
+
+        new_rot = 10
+        sync.on_rotation_change(new_rot)
+
+        assert transformable.rotation is new_rot
+
+    def test_on_scale_change(self, world):
+        sync = pdesper.GraphicSync2D(Transformable)
+        transformable = Transformable()
+        world.create_entity(desper.Transform2D(), transformable, sync)
+
+        new_scale = desper.math.Vec2(1, 2)
+        sync.on_scale_change(new_scale)
+
+        assert (transformable.scale_x, transformable.scale_y) == new_scale

@@ -5,6 +5,8 @@ import desper
 import pyglet
 from pyglet.gl import GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
 
+from .sync import *             # NOQA
+
 ON_CAMERA_DRAW_EVENT_NAME = 'on_camera_draw'
 
 

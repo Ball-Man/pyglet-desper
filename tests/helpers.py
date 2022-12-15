@@ -54,3 +54,28 @@ class OnKeyPressComponent:
 
     def on_key_press(self, *args):
         self.args_tuple = args
+
+
+class Transformable:
+    position = None
+    rotation = None
+    scale_x = None
+    scale_y = None
+
+    deleted = 0
+
+    def update(self, position=None, rotation=None, scale_x=None, scale_y=None):
+        if position is not None:
+            self.position = position
+
+        if rotation is not None:
+            self.rotation = rotation
+
+        if scale_x is not None:
+            self.scale_x = scale_x
+
+        if scale_y is not None:
+            self.scale_y = scale_y
+
+    def delete(self):
+        self.deleted += 1
