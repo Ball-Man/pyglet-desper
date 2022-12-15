@@ -12,6 +12,7 @@ classes and :class:`desper.Transform2D` is proposed (as pyglet
 abstractions are mostly 2D, 3D support will be discussed in the future).
 """
 import desper
+import pyglet
 
 
 @desper.event_handler(desper.ON_REMOVE_EVENT_NAME)
@@ -98,3 +99,32 @@ class GraphicSync2D(desper.Controller):
         """
         self.get_component(self.component_type).update(scale_x=new_scale[0],
                                                        scale_y=new_scale[1])
+
+
+@desper.event_handler(desper.ON_POSITION_CHANGE_EVENT_NAME,
+                      desper.ON_ROTATION_CHANGE_EVENT_NAME,
+                      desper.ON_SCALE_CHANGE_EVENT_NAME)
+class SpriteSync(GraphicSync2D):
+    """Synchronize :class:`desper.Transform2D` with pyglet ``Sprite``.
+
+    Handles all transformation events.
+
+    The :attr:`desper.ON_REMOVE_EVENT_NAME`
+    (i.e. ``'on_remove'``) event is automatically handled, calling on
+    the referred ``Sprite`` component the :func:`delete` method,
+    which is fundamental to correctly delete vertices of graphical
+    components when removed in real time.
+
+    This also means that ideally a ``Sprite`` instance and its
+    associated ``SpriteSync`` shall be added, removed from the world in
+    an entangled fashion.
+
+    See :class:`GraphicSync2D` for more info.
+    """
+
+    def __init__(self):
+        super().__init__(pyglet.sprite.Sprite)
+
+    def on_position_change(self, new_position: desper.math.Vec2):
+        """Event handler: update graphical component position."""
+        self.get_component(self.component_type).position = (*new_position, 0.)

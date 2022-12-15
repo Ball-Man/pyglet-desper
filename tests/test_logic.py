@@ -172,3 +172,22 @@ class TestGraphicSync2D:
         sync.on_scale_change(new_scale)
 
         assert (transformable.scale_x, transformable.scale_y) == new_scale
+
+
+class TestSpriteSync:
+
+    def test_init(self):
+        sprite_sync = pdesper.SpriteSync()
+
+        assert sprite_sync.component_type is pyglet.sprite.Sprite
+
+    def test_on_position_change(self, image, world):
+        sprite_sync = pdesper.SpriteSync()
+        transform = desper.Transform2D()
+        sprite = pyglet.sprite.Sprite(image)
+        world.create_entity(transform, sprite, sprite_sync)
+
+        new_pos = desper.math.Vec2(1, 1)
+        sprite_sync.on_position_change(new_pos)
+
+        assert sprite.position == (*new_pos, 0)
