@@ -153,3 +153,32 @@ class SpriteSync(GraphicSync2D):
     def on_position_change(self, new_position: desper.math.Vec2):
         """Event handler: update graphical component position."""
         self.get_component(self.component_type).position = (*new_position, 0.)
+
+
+@desper.event_handler(desper.ON_POSITION_CHANGE_EVENT_NAME)
+class PositionSync2D(GraphicSync2D):
+    """Synchronize :class:`desper.Transform2D` position with graphics.
+
+    Handles the :attr:`desper.ON_POSITION_CHANGE_EVENT_NAME` event.
+
+    The :attr:`desper.ON_REMOVE_EVENT_NAME`
+    (i.e. ``'on_remove'``) event is automatically handled, calling on
+    the referred graphical component the :func:`delete` method,
+    which is fundamental to correctly delete vertices of graphical
+    components when removed in real time.
+
+    This also means that ideally a graphical instance and its
+    associated ``PositionSync2D`` shall be added, removed from the world
+    in an entangled fashion.
+
+    See :class:`GraphicSync2D` for more info.
+    """
+
+
+@desper.event_handler(desper.ON_POSITION_CHANGE_EVENT_NAME,
+                      desper.ON_ROTATION_CHANGE_EVENT_NAME)
+class PositionRotationSync2D(GraphicSync2D):
+    """Same as :class:`PositionSync2D` but also synchronizes rotation.
+
+    See :class:`PositionSync2D`.
+    """
