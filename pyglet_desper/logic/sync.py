@@ -125,6 +125,31 @@ class SpriteSync(GraphicSync2D):
     def __init__(self):
         super().__init__(pyglet.sprite.Sprite)
 
+    def on_add(self, entity, world):
+        """Custom handler for better performance."""
+        self.entity = entity
+        self.world = world
+
+        transform = world.get_component(entity, desper.Transform2D)
+        assert transform is not None, (
+            'A Transform2D component must be added first '
+            f'for {self.__class__} to work')
+        transform.add_handler(self)
+
+        # Apply immediately supported transformations
+        # Stack them and apply in one go for better performance
+        transformations = {}
+
+        transformations['x'] = transform.position[0]
+        transformations['y'] = transform.position[1]
+
+        transformations['rotation'] = transform.rotation
+
+        transformations['scale_x'] = transform.scale[0]
+        transformations['scale_y'] = transform.scale[1]
+
+        self.get_component(self.component_type).update(**transformations)
+
     def on_position_change(self, new_position: desper.math.Vec2):
         """Event handler: update graphical component position."""
         self.get_component(self.component_type).position = (*new_position, 0.)

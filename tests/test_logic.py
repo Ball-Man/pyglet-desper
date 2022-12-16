@@ -181,6 +181,18 @@ class TestSpriteSync:
 
         assert sprite_sync.component_type is pyglet.sprite.Sprite
 
+    def test_on_add(self, image, world):
+        sprite_sync = pdesper.SpriteSync()
+        transform = desper.Transform2D((1, 2), 3, (4, 5))
+        sprite = pyglet.sprite.Sprite(image)
+        entity = world.create_entity(transform, sprite)
+
+        sprite_sync.on_add(entity, world)
+
+        assert (sprite.x, sprite.y) == transform.position
+        assert sprite.rotation == transform.rotation
+        assert (sprite.scale_x, sprite.scale_y) == transform.scale
+
     def test_on_position_change(self, image, world):
         sprite_sync = pdesper.SpriteSync()
         transform = desper.Transform2D()
