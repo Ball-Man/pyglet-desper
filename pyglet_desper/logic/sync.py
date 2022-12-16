@@ -182,3 +182,83 @@ class PositionRotationSync2D(GraphicSync2D):
 
     See :class:`PositionSync2D`.
     """
+
+
+def arc_sync_component() -> PositionRotationSync2D:
+    """Get a sync component for :class:`pyglet.shapes.Arc`s.
+
+    See :class:`PositionRotationSync2D`.
+    """
+    return PositionRotationSync2D(pyglet.shapes.Arc)
+
+
+def circle_sync_component() -> PositionSync2D:
+    """Get a sync component for :class:`pyglet.shapes.Circle`s.
+
+    See :class:`PositionSync2D`.
+    """
+    return PositionSync2D(pyglet.shapes.Circle)
+
+
+def ellipse_sync_component() -> PositionRotationSync2D:
+    """Get a sync component for :class:`pyglet.shapes.Ellipse`s.
+
+    See :class:`PositionRotationSync2D`.
+    """
+    return PositionRotationSync2D(pyglet.shapes.Ellipse)
+
+
+def sector_sync_component() -> PositionRotationSync2D:
+    """Get a sync component for :class:`pyglet.shapes.Sector`s.
+
+    See :class:`PositionRotationSync2D`.
+    """
+    return PositionRotationSync2D(pyglet.shapes.Sector)
+
+
+def line_sync_component() -> PositionSync2D:
+    """Get a sync component for :class:`pyglet.shapes.Line`s.
+
+    See :class:`PositionSync2D`.
+    """
+    return PositionSync2D(pyglet.shapes.Line)
+
+
+def rectangle_sync_component() -> PositionRotationSync2D:
+    """Get a sync component for :class:`pyglet.shapes.Rectangle`s.
+
+    See :class:`PositionRotationSync2D`.
+    """
+    return PositionRotationSync2D(pyglet.shapes.Rectangle)
+
+
+def borderedrectangle_sync_component() -> PositionRotationSync2D:
+    """Get a sync component for :class:`pyglet.shapes.BorderedRectangle`s.
+
+    See :class:`PositionRotationSync2D`.
+    """
+    return PositionRotationSync2D(pyglet.shapes.BorderedRectangle)
+
+
+def triangle_sync_component() -> PositionSync2D:
+    """Get a sync component for :class:`pyglet.shapes.Triangle`s.
+
+    See :class:`PositionSync2D`.
+    """
+    return PositionSync2D(pyglet.shapes.Triangle)
+
+
+def star_sync_component() -> PositionRotationSync2D:
+    """Get a sync component for :class:`pyglet.shapes.Star`s.
+
+    See :class:`PositionRotationSync2D`.
+    """
+    return PositionRotationSync2D(pyglet.shapes.Star)
+
+
+def polygon_sync_component() -> PositionRotationSync2D:
+    """Get a sync component for :class:`pyglet.shapes.Polygon`s.
+
+    See :class:`PositionRotationSync2D`.
+    """
+    return PositionRotationSync2D(pyglet.shapes.Polygon)

@@ -203,3 +203,41 @@ class TestSpriteSync:
         sprite_sync.on_position_change(new_pos)
 
         assert sprite.position == (*new_pos, 0)
+
+
+def test_arc_sync_component():
+    sync_component = pdesper.arc_sync_component()
+
+    assert isinstance(sync_component, pdesper.PositionRotationSync2D)
+    assert sync_component.component_type is pyglet.shapes.Arc
+
+
+# Group all unit tests for sync component functions
+@pytest.mark.parametrize('component_function,reference_class,return_type', [
+    (pdesper.arc_sync_component, pyglet.shapes.Arc,
+     pdesper.PositionRotationSync2D),
+    (pdesper.circle_sync_component, pyglet.shapes.Circle,
+     pdesper.PositionSync2D),
+    (pdesper.ellipse_sync_component, pyglet.shapes.Ellipse,
+     pdesper.PositionRotationSync2D),
+    (pdesper.sector_sync_component, pyglet.shapes.Sector,
+     pdesper.PositionRotationSync2D),
+    (pdesper.line_sync_component, pyglet.shapes.Line,
+     pdesper.PositionSync2D),
+    (pdesper.rectangle_sync_component, pyglet.shapes.Rectangle,
+     pdesper.PositionRotationSync2D),
+    (pdesper.borderedrectangle_sync_component, pyglet.shapes.BorderedRectangle,
+     pdesper.PositionRotationSync2D),
+    (pdesper.triangle_sync_component, pyglet.shapes.Triangle,
+     pdesper.PositionSync2D),
+    (pdesper.star_sync_component, pyglet.shapes.Star,
+     pdesper.PositionRotationSync2D),
+    (pdesper.polygon_sync_component, pyglet.shapes.Polygon,
+     pdesper.PositionRotationSync2D),
+])
+def test_sync_component_function(component_function, reference_class,
+                                 return_type):
+    sync_component = component_function()
+
+    assert isinstance(sync_component, return_type)
+    assert sync_component.component_type is reference_class
