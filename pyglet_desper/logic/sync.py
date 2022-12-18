@@ -262,3 +262,27 @@ def polygon_sync_component() -> PositionRotationSync2D:
     See :class:`PositionRotationSync2D`.
     """
     return PositionRotationSync2D(pyglet.shapes.Polygon)
+
+
+def htmllabel_sync_component() -> PositionRotationSync2D:
+    """Get a sync component for :class:`pyglet.text.HTMLLabel`.
+
+    See :class:`PositionRotationSync2D`.
+    """
+    return PositionRotationSync2D(pyglet.text.HTMLLabel)
+
+
+def documentlabel_sync_component() -> PositionRotationSync2D:
+    """Get a sync component for :class:`pyglet.text.DocumentLabel`.
+
+    See :class:`PositionRotationSync2D`.
+    """
+    return PositionRotationSync2D(pyglet.text.DocumentLabel)
+
+
+def label_sync_component() -> PositionRotationSync2D:
+    """Get a sync component for :class:`pyglet.text.Label`.
+
+    See :class:`PositionRotationSync2D`.
+    """
+    return PositionRotationSync2D(pyglet.text.Label)

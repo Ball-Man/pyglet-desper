@@ -214,6 +214,7 @@ def test_arc_sync_component():
 
 # Group all unit tests for sync component functions
 @pytest.mark.parametrize('component_function,reference_class,return_type', [
+    # Shapes
     (pdesper.arc_sync_component, pyglet.shapes.Arc,
      pdesper.PositionRotationSync2D),
     (pdesper.circle_sync_component, pyglet.shapes.Circle,
@@ -233,6 +234,14 @@ def test_arc_sync_component():
     (pdesper.star_sync_component, pyglet.shapes.Star,
      pdesper.PositionRotationSync2D),
     (pdesper.polygon_sync_component, pyglet.shapes.Polygon,
+     pdesper.PositionRotationSync2D),
+
+    # Text
+    (pdesper.documentlabel_sync_component, pyglet.text.DocumentLabel,
+     pdesper.PositionRotationSync2D),
+    (pdesper.htmllabel_sync_component, pyglet.text.HTMLLabel,
+     pdesper.PositionRotationSync2D),
+    (pdesper.label_sync_component, pyglet.text.Label,
      pdesper.PositionRotationSync2D),
 ])
 def test_sync_component_function(component_function, reference_class,
