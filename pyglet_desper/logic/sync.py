@@ -119,11 +119,16 @@ class SpriteSync(GraphicSync2D):
     associated ``SpriteSync`` shall be added, removed from the world in
     an entangled fashion.
 
+    Target class (``component_type``) defaults to
+    :class:`pyglet.sprite.Sprite`, but can be specialized to get
+    extra performance during component resolution (e.g. by specifying
+    :class:`pyglet-desper.Sprite`).
+
     See :class:`GraphicSync2D` for more info.
     """
 
-    def __init__(self):
-        super().__init__(pyglet.sprite.Sprite)
+    def __init__(self, component_type: type = pyglet.sprite.Sprite):
+        super().__init__(component_type)
 
     def on_add(self, entity, world):
         """Custom handler for better performance."""
