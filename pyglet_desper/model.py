@@ -14,6 +14,8 @@ from pyglet.media.codecs import MediaDecoder
 from pyglet.image.codecs import ImageDecoder
 from pyglet.image.atlas import TextureBin
 
+from pyglet_desper.logic import CameraProcessor
+
 
 default_texture_bin = pyglet.image.atlas.TextureBin()
 """Default texture atlas for :class:`ImageFileHandle`.
@@ -325,3 +327,19 @@ class FontFileHandle(desper.Handle[None]):
     def load(self) -> None:
         """Add file as font."""
         pyglet.font.add_file(self.filename)
+
+
+def default_processors_transformer(world_handle: desper.WorldHandle,
+                                   world: desper.World):
+    """World transformer, use with :class:`WorldHandle`.
+
+    Populate ``world`` with default pyglet based processors, i.e.:
+
+    - :class:`pyglet-desper.CameraProcessor`
+
+    Note that despite the similarity, this does not substitute
+    desper's :func:`desper.default_processors_transformer`, as it
+    simply adds a different set of processors. In a typical scenario,
+    both desper's original transformer and this one shall be used.
+    """
+    world.add_processor(CameraProcessor())

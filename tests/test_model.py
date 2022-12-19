@@ -211,3 +211,12 @@ class TestFontFileHandle:
         handle.load()
 
         assert pyglet.font.have_font('SillySet')
+
+
+def test_default_processors_transformer():
+    handle = desper.WorldHandle()
+    world = handle()
+
+    pdesper.default_processors_transformer(handle, world)
+
+    assert world.get_processor(pdesper.CameraProcessor) is not None
