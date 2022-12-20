@@ -6,6 +6,7 @@ import json
 
 import pytest
 import pyglet
+from pyglet.graphics import Batch
 
 from helpers import *       # NOQA
 
@@ -220,3 +221,21 @@ def test_default_processors_transformer():
     pdesper.default_processors_transformer(handle, world)
 
     assert world.get_processor(pdesper.CameraProcessor) is not None
+
+
+def test_retrieve_batch(world, default_loop):
+    batch = pdesper.retrieve_batch(world)
+    assert world.get(Batch)[0][1] is batch
+
+    # Test query with existing batch
+    batch = pdesper.retrieve_batch(world)
+    assert len(world.get(Batch)) == 1
+    assert world.get(Batch)[0][1] is batch
+
+    # Test on default loop
+    handle = desper.WorldHandle()
+    default_loop.switch(handle)
+
+    batch = pdesper.retrieve_batch()
+
+    assert handle().get(Batch)[0][1] is batch

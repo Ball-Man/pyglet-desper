@@ -5,7 +5,7 @@ provided.
 """
 import json
 import os.path as pt
-from typing import Union
+from typing import Union, Optional
 
 import desper
 import pyglet
@@ -14,7 +14,7 @@ from pyglet.media.codecs import MediaDecoder
 from pyglet.image.codecs import ImageDecoder
 from pyglet.image.atlas import TextureBin
 
-from pyglet_desper.logic import CameraProcessor
+from pyglet_desper.logic import CameraProcessor, Camera
 
 
 default_texture_bin = pyglet.image.atlas.TextureBin()
@@ -40,6 +40,9 @@ Map absolute filenames to pyglet images. Mainly populated by
 :class:`ImageFileHandle` to prevent reloading the same image multiple
 times.
 """
+
+GRAPHIC_BASE_CLASSES = (pyglet.sprite.Sprite, pyglet.shapes.ShapeBase,
+                        pyglet.text.layout.TextLayout)
 
 
 def clear_image_cache():
@@ -343,3 +346,44 @@ def default_processors_transformer(world_handle: desper.WorldHandle,
     both desper's original transformer and this one shall be used.
     """
     world.add_processor(CameraProcessor())
+
+
+def retrieve_batch(world: Optional[desper.World] = None
+                   ) -> pyglet.graphics.Batch:
+    """Retrieve a batch from the given world.
+
+    A batch will be found by either:
+
+    - directly querying for a batch via
+        ``world.get(pyglet.graphics.Batch)``
+    - querying for an existing camera via
+        ``world.get(pyglet_desper.Camera)``
+
+    If no batch or camera can be found, a new
+    :class:`pyglet.graphics.Batch` is constructed and added to the
+    ``world`` (creating an entity with just the batch as component),
+    and then returned.
+    No camera is created by default. This batch can be queried later by
+    the user and included in a camera if desired.
+
+    If omitted ``world`` will default to
+    :attr:`desper.default_loop.current_world`.
+    """
+    world = world or desper.default_loop.current_world
+    assert world is not None, ('Could not find current world, '
+                               'desper.default_loop is uninitialized or is '
+                               'not being used. Pass a proper World instance '
+                               'as parameter.')
+
+    batch_query = world.get(pyglet.graphics.Batch)
+    if batch_query:
+        return batch_query[0][1]
+
+    camera_query = world.get(Camera)
+    if camera_query:
+        return camera_query[0][1].batch
+
+    # Otherwise, create a new batch
+    batch = pyglet.graphics.Batch()
+    world.create_entity(batch)
+    return batch

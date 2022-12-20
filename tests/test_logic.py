@@ -19,11 +19,6 @@ def animation(image):
     ])
 
 
-@pytest.fixture
-def world():
-    return desper.World()
-
-
 class TestSprite:
 
     def test_on_add(self, window, animation):

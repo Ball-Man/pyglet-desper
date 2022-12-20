@@ -21,6 +21,17 @@ def window():
     win.close()
 
 
+@pytest.fixture
+def world():
+    return desper.World()
+
+
+@pytest.fixture
+def default_loop():
+    desper.default_loop = desper.SimpleLoop()
+    return desper.default_loop
+
+
 @desper.event_handler('on_update')
 class OnUpdateComponent:
     frames = 0
