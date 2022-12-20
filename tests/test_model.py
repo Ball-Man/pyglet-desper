@@ -1,5 +1,6 @@
 from context import pyglet_desper as pdesper
 
+import inspect
 import os
 import os.path as pt
 import json
@@ -292,3 +293,20 @@ def test_init_graphics_transformer(png_image):
     assert excluded_sprite.group is None
 
     assert not world.get(pdesper.WantsGroupBatch)
+
+
+def test_world_from_file_handle():
+    handle = pdesper.world_from_file_handle('...')
+
+    assert isinstance(handle, desper.WorldFromFileHandle)
+
+    for transform_function in desper.WorldFromFileHandle(
+            '...').transform_functions:
+        if not inspect.isfunction(transform_function):
+            assert type(transform_function) in map(type,
+                                                   handle.transform_functions)
+        else:
+            assert transform_function in handle.transform_functions
+
+    assert pdesper.default_processors_transformer in handle.transform_functions
+    assert pdesper.init_graphics_transformer in handle.transform_functions

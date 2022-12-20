@@ -459,3 +459,22 @@ def init_graphics_transformer(world_handle: desper.WorldHandle,
     # Cleanup unneeded components
     for entity, _ in world.get(WantsGroupBatch):
         world.remove_component(entity, WantsGroupBatch)
+
+
+def world_from_file_handle(filename: str) -> desper.WorldFromFileHandle:
+    """Construct a world handle for pyglet based worlds.
+
+
+    All the transformers present in :class:`desper.WorldFromFileHandle`
+    are kept, but pyglet specific ones are added. In particular:
+
+    - :func:`default_processors_transformer`, for pyglet specific
+        :class:`desper.Processor`s
+    - :func:`init_graphics_transformer`, for the correct initialization
+        of pyglet components instantiated from file
+    """
+    handle = desper.WorldFromFileHandle(filename)
+    handle.transform_functions.appendleft(default_processors_transformer)
+    handle.transform_functions.append(init_graphics_transformer)
+
+    return handle
