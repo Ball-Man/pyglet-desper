@@ -5,10 +5,11 @@ provided.
 """
 import json
 import os.path as pt
-from typing import Union, Optional
+from typing import Union, Optional, Callable
 
 import desper
 import pyglet
+from pyglet.graphics import Group
 from pyglet.image import Animation, AnimationFrame, AbstractImage
 from pyglet.media.codecs import MediaDecoder
 from pyglet.image.codecs import ImageDecoder
@@ -41,8 +42,10 @@ Map absolute filenames to pyglet images. Mainly populated by
 times.
 """
 
-GRAPHIC_BASE_CLASSES = (pyglet.sprite.Sprite, pyglet.shapes.ShapeBase,
+GRAPHIC_BASE_CLASSES = (pyglet.sprite.Sprite,
                         pyglet.text.layout.TextLayout)
+# pyglet.shapes.ShapeBase is currently excluded as it does not support
+# batch and group
 
 
 def clear_image_cache():
@@ -387,3 +390,72 @@ def retrieve_batch(world: Optional[desper.World] = None
     batch = pyglet.graphics.Batch()
     world.create_entity(batch)
     return batch
+
+
+class WantsGroupBatch:
+    """Simple component used to mark graphical components.
+
+    Does nothing on its own, but is used by
+    :func:`init_graphics_transformer` to identify which components to
+    act on (see its docstring for more info). A Graphical component will
+    be populated with a :class:`pyglet.graphics.Batch` and a
+    :class:`pyglet.graphics.Group`, based on the given ``order``.
+
+    Designed mostly to be used by export/import scripts for
+    :class:`desper.World` instances.
+    """
+
+    def __init__(self, order: int = 0,
+                 group_factory: Callable[[...], Group] = Group):
+        self.order = order
+        self.group_factory = group_factory
+
+    def build_group(self) -> Group:
+        return self.group_factory(self.order)
+
+
+def init_graphics_transformer(world_handle: desper.WorldHandle,
+                              world: desper.World):
+    """World transformer, use with :class:`WorldHandle`.
+
+    Designed to be placed after a
+    :class:`desper.WorldFromFileTransformer`, in order to correctly
+    finalize graphical components in a world created from file.
+
+    In particular, all entities that have both a graphical component
+    (from pyglet) and a :class:`WantsGroupBatch` will retrieve a
+    :class:`pyglet.graphics.Batch` using
+    :func:`retrieve_batch`. This batch can be queried later by
+    the user and included in a camera if desired. This also means that
+    all found graphical components will be assigned to the same batch
+    (usually the best option anyway).
+    The :class:`WantsGroupBatch` class is also used to build a
+    :class:`pyglet.graphics.Group`. Note that this approach is mainly
+    there in order to correctly initialize graphics in worlds loaded
+    from files. Standard approach would be creating pyglet components
+    directly, assigning the desired group and batch (eventually
+    retrieving it with :func:`retrieve_batch`).
+
+    Graphical components are discovered by querying the following
+    class hierarchies:
+
+    - :class:`pyglet.text.layout.TextLayout`, base class for all text
+        related classes
+    - :class:`pyglet.sprite.Sprite`, base class for all sprites
+
+    Shapes are not evaluated (shall be manually managed by the user)
+    since pyglet shapes do not currently support properties
+    ``group`` and ``batch``.
+    """
+    for graphics_type in GRAPHIC_BASE_CLASSES:
+        for entity, graphics in world.get(graphics_type):
+            # If WantsGroupBatch is found, it means that the
+            # associated pyglet component needs a batch and a group
+            wants = world.get_component(entity, WantsGroupBatch)
+            if wants is not None:
+                graphics.group = wants.build_group()
+                graphics.batch = retrieve_batch(world)
+
+    # Cleanup unneeded components
+    for entity, _ in world.get(WantsGroupBatch):
+        world.remove_component(entity, WantsGroupBatch)

@@ -239,3 +239,56 @@ def test_retrieve_batch(world, default_loop):
     batch = pdesper.retrieve_batch()
 
     assert handle().get(Batch)[0][1] is batch
+
+
+class TestWantsGroupBatch:
+
+    @pytest.mark.parametrize('order,factory', [
+        (1, pyglet.graphics.Group)
+    ])
+    def test_init(self, order, factory):
+        wants = pdesper.WantsGroupBatch(order, factory)
+
+        assert wants.order is order
+        assert wants.group_factory is factory
+
+    @pytest.mark.parametrize('order,factory', [
+        (1, pyglet.graphics.Group)
+    ])
+    def test_build_group(self, order, factory):
+        wants = pdesper.WantsGroupBatch(order, factory)
+
+        group = wants.build_group()
+        assert group.order == order
+        # Don't test for type, as the factory might be a simple function
+
+
+def test_init_graphics_transformer(png_image):
+    handle = desper.WorldHandle()
+    world = handle()
+
+    # Population
+    sprite = pdesper.Sprite(png_image)
+    sprite2 = pyglet.sprite.Sprite(png_image)
+    # Shapes currently unsupported by the transformer
+    # shape = pyglet.shapes.Circle(0, 0, 10)
+    wants1 = pdesper.WantsGroupBatch(1)
+
+    text = pyglet.text.Label()
+    wants2 = pdesper.WantsGroupBatch()
+
+    excluded_sprite = pdesper.Sprite(png_image)
+
+    world.create_entity(sprite, sprite2, wants1)
+    world.create_entity(text, wants2)
+    world.create_entity(excluded_sprite)
+
+    pdesper.init_graphics_transformer(handle, world)
+
+    assert sprite.batch is sprite2.batch is text.batch
+    assert sprite.batch is not excluded_sprite.batch
+    assert sprite.group.order == sprite2.group.order == wants1.order
+    assert text.group.order == wants2.order
+    assert excluded_sprite.group is None
+
+    assert not world.get(pdesper.WantsGroupBatch)
