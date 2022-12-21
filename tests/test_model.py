@@ -310,3 +310,22 @@ def test_world_from_file_handle():
 
     assert pdesper.default_processors_transformer in handle.transform_functions
     assert pdesper.init_graphics_transformer in handle.transform_functions
+
+
+def test_resource_populator():
+    resource_map = desper.ResourceMap()
+    pdesper.resource_populator(
+        resource_map, get_filename('files', 'fake_project'))
+
+    assert type(
+        resource_map.get('font/SillySet.ttf')) is pdesper.FontFileHandle
+    assert isinstance(resource_map['image/animation1.png'],
+                      pyglet.image.AbstractImage)
+    assert isinstance(resource_map['image/animation1.json'],
+                      pyglet.image.Animation)
+    assert isinstance(resource_map['image/muybridge.gif'],
+                      pyglet.image.Animation)
+    assert isinstance(resource_map['media/yayuh.wav'],
+                      pyglet.media.StaticSource)
+    assert isinstance(resource_map['media/streaming/yayuh.wav'],
+                      pyglet.media.StreamingSource)

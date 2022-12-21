@@ -47,6 +47,13 @@ GRAPHIC_BASE_CLASSES = (pyglet.sprite.Sprite,
 # pyglet.shapes.ShapeBase is currently excluded as it does not support
 # batch and group
 
+# Default populator
+MEDIA_DIRECTORY = 'media'
+MEDIA_STREAMING_DIRECTORY = pt.join('media', 'streaming')
+FONT_DIRECTORY = 'font'
+IMAGE_DIRECTORY = 'image'
+WORLD_DIRECTORY = 'world'
+
 
 def clear_image_cache():
     """Clear module level image cache.
@@ -478,3 +485,31 @@ def world_from_file_handle(filename: str) -> desper.WorldFromFileHandle:
     handle.transform_functions.append(init_graphics_transformer)
 
     return handle
+
+
+resource_populator = desper.DirectoryResourcePopulator()
+"""Default directory resource populator.
+
+Enables populating a :class:`desper.ResourceMap` from a directory
+tree having the following structure:::
+
+    resources
+    ├── media
+    │   └── streaming
+    ├── font
+    ├── image
+    └── world
+
+The used :class:`Handle` factories are:
+
+- :class:`MediaFileHandle` for media resources
+- :class:`FontFileHandle` for font resources
+- :class:`RichImageFileHandle` for image and animation resources
+- :class:`world_from_file_handle` for world resources
+"""
+resource_populator.add_rule(MEDIA_DIRECTORY, MediaFileHandle)
+resource_populator.add_rule(MEDIA_STREAMING_DIRECTORY, MediaFileHandle,
+                            streaming=True)
+resource_populator.add_rule(FONT_DIRECTORY, FontFileHandle)
+resource_populator.add_rule(IMAGE_DIRECTORY, RichImageFileHandle)
+resource_populator.add_rule(WORLD_DIRECTORY, world_from_file_handle)
