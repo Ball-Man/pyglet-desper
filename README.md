@@ -4,4 +4,4 @@
 Combine resource and logic management of [desper](https://github.com/Ball-Man/desper]) with [pyglet](https://github.com/pyglet/pyglet)'s rendering and media.
 
 ## Project status
-The project is in beta status. A user guide for both desper and this package are going to arise as soon as they are feature complete.
+Docs and a user guide are in the making.
