@@ -20,6 +20,9 @@ jobs:
         python-version: ["3.9", "3.10", "3.11"]
 
     steps:
+    - name: Update mirrors
+      run: |
+        sudo apt-get update
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
