@@ -8,7 +8,7 @@ setup(name='pyglet-desper',
                    'Programming Language :: Python :: 3 :: Only',
                    'Topic :: Games/Entertainment'],
       python_requires='>=3.9',
-      version='0.9.0',
+      version='0.10.0',
       description='Extension package for desper and pyglet '
                   'interoperation',
       install_requires=REQUIREMENTS,
