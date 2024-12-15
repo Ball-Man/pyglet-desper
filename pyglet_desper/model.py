@@ -139,7 +139,7 @@ class ImageFileHandle(desper.Handle[pyglet.image.AbstractImage]):
             and image.width + self.border <= self.texture_bin.texture_width
             and image.height + self.border
                 <= self.texture_bin.texture_height):
-            image = self.texture_bin.add(image)
+            image = self.texture_bin.add(image, 1)
 
         _image_cache[abs_filename] = image
         return image
