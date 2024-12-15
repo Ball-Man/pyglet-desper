@@ -29,8 +29,6 @@ class Loop(desper.Loop[desper.World]):
 
         To properly start the loop, use :meth:`start`.
         """
-        pyglet.clock.schedule(self.iteration)
-
         # Keep rescheduling the main loop until all windows are closed
         while pyglet.app.windows and not pyglet.app.event_loop.has_exit:
             try:
@@ -52,6 +50,12 @@ class Loop(desper.Loop[desper.World]):
         See :meth:`Loop._switch` for the basic behaviour.
         """
         super().switch(world_handle, clear_current, clear_next)
+
+        pyglet.clock.unschedule(self.iteration)
+        if self.interval is None:
+            pyglet.clock.schedule(self.iteration)
+        else:
+            pyglet.clock.schedule_interval(self.iteration, self.interval)
 
         world_handle().dispatch_enabled = True
 
