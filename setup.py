@@ -1,6 +1,9 @@
 from setuptools import setup, find_packages
 
-REQUIREMENTS = open('requirements.txt').read().splitlines()
+REQUIREMENTS = (
+      'desper >= 1.1.1',
+      'pyglet >= 2.1.0, < 2.2'
+)
 README = open('README.md').read()
 
 setup(name='pyglet-desper',
