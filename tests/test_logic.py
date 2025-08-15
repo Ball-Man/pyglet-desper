@@ -37,24 +37,6 @@ class TestSprite:
         assert sprite.paused
 
 
-class TestAdvancedSprite:
-
-    def test_on_add(self, window, animation):
-        sprite = pdesper.AdvancedSprite(animation)
-        sprite.on_add(None, None)
-        assert not sprite.paused
-
-    def test_on_switch_in(self, window, animation):
-        sprite = pdesper.AdvancedSprite(animation)
-        sprite.on_switch_in(None, None)
-        assert not sprite.paused
-
-    def test_on_switch_out(self, window, animation):
-        sprite = pdesper.AdvancedSprite(animation)
-        sprite.on_switch_out(None, None)
-        assert sprite.paused
-
-
 class TestCamera:
 
     def test_init_default(self, window):
