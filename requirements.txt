@@ -1,2 +1,2 @@
 desper >= 1.1.1
-pyglet >= 2.1.0, < 2.2
+pyglet > 2.1
