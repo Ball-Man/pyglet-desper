@@ -43,6 +43,26 @@ class Loop(desper.Loop[desper.World]):
             # Prevent window redraw from scheduling multiple times
             pyglet.clock.unschedule(pyglet.app.event_loop._redraw_windows)
 
+    async def async_loop(self):
+        """Execute main pyglet async loop.
+
+        Internally, the main pyglet loop is started and awaited
+        with ``pyglet.app.event_loop.run()``. It is assumed that
+        the event loops is an async one, otherwise see :meth:`start`.
+        """
+        # Keep rescheduling the main loop until all windows are closed
+        while pyglet.app.windows:
+            try:
+                if self.interval is None or pyglet.compat_platform == 'emscripten':
+                    await pyglet.app.event_loop.run(None)
+                else:
+                    await pyglet.app.event_loop.run(self.interval)
+            except desper.SwitchWorld as ex:
+                self.switch(ex.world_handle, ex.clear_current, ex.clear_next)
+
+            # Prevent window redraw from scheduling multiple times
+            pyglet.clock.unschedule(pyglet.app.event_loop._redraw_windows)
+
     def switch(self, world_handle: desper.Handle[desper.World],
                clear_current=False, clear_next=False):
         """Switch world and ensure correct dispatching of events.
