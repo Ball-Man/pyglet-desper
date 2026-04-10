@@ -3,7 +3,7 @@ from typing import Optional
 
 import desper
 import pyglet
-from pyglet.gl import GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA
+from pyglet.enums import BlendFactor
 
 from .sync import *             # NOQA
 
@@ -26,8 +26,8 @@ class Sprite(pyglet.sprite.Sprite):
 
     def __init__(self,
                  img, x=0, y=0, z=0,
-                 blend_src=GL_SRC_ALPHA,
-                 blend_dest=GL_ONE_MINUS_SRC_ALPHA,
+                 blend_src=BlendFactor.SRC_ALPHA,
+                 blend_dest=BlendFactor.ONE_MINUS_SRC_ALPHA,
                  batch=None,
                  group=None,
                  subpixel=False,

@@ -65,7 +65,7 @@ def font_filename():
 
 @pytest.fixture
 def texture_bin():
-    return pyglet.image.atlas.TextureBin()
+    return pyglet.graphics.TextureBin()
 
 
 @pytest.fixture
@@ -113,7 +113,7 @@ class TestImageFileHandle:
         handle = pdesper.ImageFileHandle(png_filename, texture_bin=texture_bin)
         image = handle.load()
 
-        assert isinstance(image, pyglet.image.AbstractImage)
+        assert isinstance(image, pyglet.graphics.texture.Texture)
         assert pt.abspath(png_filename) in pdesper.model._image_cache
         assert texture_bin.atlases
 
@@ -145,7 +145,8 @@ class TestParseSpritesheet():
 
         assert isinstance(
             result,
-            (pyglet.image.TextureRegion, pyglet.image.ImageDataRegion))
+            (pyglet.graphics.texture.TextureRegion,
+             pyglet.image.ImageDataRegion))
 
         assert result.width == frame_region['w']
         assert result.height == frame_region['h']
@@ -202,7 +203,7 @@ class TestRichImageFileHandle:
 
         image = handle.load()
 
-        assert isinstance(image, pyglet.image.AbstractImage)
+        assert isinstance(image, pyglet.graphics.texture.Texture)
 
 
 class TestFontFileHandle:
@@ -320,7 +321,7 @@ def test_resource_populator():
     assert type(
         resource_map.get('font/SillySet.ttf')) is pdesper.FontFileHandle
     assert isinstance(resource_map['image/animation1.png'],
-                      pyglet.image.AbstractImage)
+                      pyglet.graphics.texture.Texture)
     assert isinstance(resource_map['image/animation1.json'],
                       pyglet.image.Animation)
     assert isinstance(resource_map['image/muybridge.gif'],

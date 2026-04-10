@@ -10,15 +10,16 @@ from typing import Union, Optional, Callable
 import desper
 import pyglet
 from pyglet.graphics import Group
-from pyglet.image import Animation, AnimationFrame, AbstractImage
+from pyglet.image import Animation, AnimationFrame
+from pyglet.graphics.texture import Texture
 from pyglet.media.codecs import MediaDecoder
 from pyglet.image.codecs import ImageDecoder
-from pyglet.image.atlas import TextureBin
+from pyglet.graphics.atlas import TextureBin
 
 from pyglet_desper.logic import CameraProcessor, Camera
 
 
-default_texture_bin = pyglet.image.atlas.TextureBin()
+default_texture_bin = None
 """Default texture atlas for :class:`ImageFileHandle`.
 
 All images loaded with said handle class will by default be added
@@ -34,7 +35,7 @@ Specify a bin manually as parameter for :class:`ImageFileHandle`
 in that case.
 """
 
-_image_cache: dict[str, pyglet.image.AbstractImage] = {}
+_image_cache: dict[str, Texture] = {}
 """Cache for internal use.
 
 Map absolute filenames to pyglet images. Mainly populated by
@@ -53,6 +54,15 @@ MEDIA_STREAMING_DIRECTORY = pt.join('media', 'streaming')
 FONT_DIRECTORY = 'font'
 IMAGE_DIRECTORY = 'image'
 WORLD_DIRECTORY = 'world'
+
+
+def _get_default_texture_bin() -> TextureBin:
+    """"""
+    global default_texture_bin
+    if default_texture_bin is None:
+        default_texture_bin = TextureBin()
+
+    return default_texture_bin
 
 
 def clear_image_cache():
@@ -94,7 +104,7 @@ class MediaFileHandle(desper.Handle[pyglet.media.Source]):
                                  decoder=self.decoder)
 
 
-class ImageFileHandle(desper.Handle[pyglet.image.AbstractImage]):
+class ImageFileHandle(desper.Handle[Texture]):
     """Specialized handle for :class:`pyglet.image.AbstractImage`.
 
     Given a filename (path string), the :meth:`load` implementation
@@ -119,7 +129,7 @@ class ImageFileHandle(desper.Handle[pyglet.image.AbstractImage]):
 
     def __init__(self, filename: str,
                  atlas=True, border: int = 1,
-                 texture_bin: TextureBin = default_texture_bin,
+                 texture_bin: TextureBin | None = None,
                  decoder: ImageDecoder = None):
         self.filename = filename
         self.atlas = atlas
@@ -127,13 +137,16 @@ class ImageFileHandle(desper.Handle[pyglet.image.AbstractImage]):
         self.texture_bin = texture_bin
         self.decoder = decoder
 
-    def load(self) -> pyglet.image.AbstractImage:
+    def load(self) -> Texture:
         """Load file with given parameters."""
         abs_filename = pt.abspath(self.filename)
         if abs_filename in _image_cache:
             return _image_cache[abs_filename]
 
         image = pyglet.image.load(abs_filename, decoder=self.decoder)
+
+        if self.texture_bin is None:
+            self.texture_bin = _get_default_texture_bin()
 
         if (self.atlas
             and image.width + self.border <= self.texture_bin.texture_width
@@ -145,8 +158,8 @@ class ImageFileHandle(desper.Handle[pyglet.image.AbstractImage]):
         return image
 
 
-def parse_spritesheet(sheet: pyglet.image.AbstractImage,
-                      metadata: dict) -> Union[AbstractImage, Animation]:
+def parse_spritesheet(sheet: Texture,
+                      metadata: dict) -> Union[Texture, Animation]:
     """Setup image or animation from a source image and a dictionary.
 
     The dictionary must be in the following format:::
@@ -241,7 +254,7 @@ def parse_spritesheet(sheet: pyglet.image.AbstractImage,
                       for region, duration in zip(regions, durations)])
 
 
-def load_spritesheet(filename: str) -> Union[AbstractImage, Animation]:
+def load_spritesheet(filename: str) -> Union[Texture, Animation]:
     """Load an animation or image from a metadata file.
 
     The file must be a json in the following format:::
@@ -277,7 +290,7 @@ def load_spritesheet(filename: str) -> Union[AbstractImage, Animation]:
     return parse_spritesheet(ImageFileHandle(image_filename).load(), metadata)
 
 
-class RichImageFileHandle(desper.Handle[Union[Animation, AbstractImage]]):
+class RichImageFileHandle(desper.Handle[Union[Animation, Texture]]):
     """Specialized handle for image and animation formats.
 
     Given a filename (path string), the :meth:`load` implementation
@@ -294,7 +307,7 @@ class RichImageFileHandle(desper.Handle[Union[Animation, AbstractImage]]):
     def __init__(self, filename: str):
         self.filename = filename
 
-    def load(self) -> Union[Animation, AbstractImage]:
+    def load(self) -> Union[Animation, Texture]:
         """Load designated file.
 
         Try loading it as a spritesheet (see
