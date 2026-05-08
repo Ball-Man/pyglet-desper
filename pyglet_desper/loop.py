@@ -91,6 +91,8 @@ class Loop(desper.Loop[desper.World]):
             if self.current_world is not None:
                 self.current_world.dispatch(event_name, *args, **kwargs)
 
+            return True
+
         return dispatch
 
     def connect_window_events(self, window: pyglet.window.Window,
