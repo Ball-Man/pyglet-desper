@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 REQUIREMENTS = (
       'desper >= 1.1.1',
-      'pyglet > 2.1'
+      'pyglet > 2.1, < 3.0.dev5'
 )
 README = open('README.md').read()
 

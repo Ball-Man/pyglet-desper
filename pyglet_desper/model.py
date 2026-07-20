@@ -80,7 +80,7 @@ class MediaFileHandle(desper.Handle[pyglet.media.Source]):
 
     Given a filename (path string), the :meth:`load` implementation
     tries to load given file as a :class:`pyglet.media.Source`
-    object, i.e. an audio or video resource.
+    object. Only audio sources are supported.
 
     Optionally, the source can be set to be streamed from disk
     through the ``streaming`` parameter (defaults to: not streamed).
@@ -100,8 +100,8 @@ class MediaFileHandle(desper.Handle[pyglet.media.Source]):
 
     def load(self) -> pyglet.media.Source:
         """Load file with given parameters."""
-        return pyglet.media.load(self.filename, streaming=self.streaming,
-                                 decoder=self.decoder)
+        return pyglet.media.load_audio(self.filename, streaming=self.streaming,
+                                       decoder=self.decoder)
 
 
 class ImageFileHandle(desper.Handle[Texture]):
