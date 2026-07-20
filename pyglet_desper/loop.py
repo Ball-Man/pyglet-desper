@@ -57,6 +57,14 @@ class Loop(desper.Loop[desper.World]):
                     await pyglet.app.event_loop.run(None)
                 else:
                     await pyglet.app.event_loop.run(self.interval)
+
+                # The pyglet async loop catches all exceptions without
+                # propagating them.
+                # If this is reached, either the loop exited spontaneously due
+                # to a terminating event, or an exception was caught.
+                # Best we can do is exit.
+                return
+
             except desper.SwitchWorld as ex:
                 self.switch(ex.world_handle, ex.clear_current, ex.clear_next)
 
